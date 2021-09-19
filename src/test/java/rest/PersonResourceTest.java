@@ -9,6 +9,7 @@ package rest;
  *
  * @author mikke
  */
+import dtos.PersonDTO;
 import entities.Person;
 import utils.EMF_Creator;
 import io.restassured.RestAssured;
@@ -146,14 +147,16 @@ public class PersonResourceTest {
     public void testUpdatePerson() {
         int id = p2.getId();
         
-        JSONObject requestParams = new JSONObject();
-        requestParams.put("fName", "testPUT");
-        requestParams.put("lName", "testPUT");
-        requestParams.put("phone", "testPUT");
+        //JSONObject requestParams = new JSONObject();
+        //requestParams.put("fName", "testPUT");
+        //requestParams.put("lName", "testPUT");
+        //requestParams.put("phone", "testPUT");
 
+        PersonDTO pDTO = new PersonDTO("testPUT", "testlNamePUT", "phonenumber");
         given()
                 .contentType("application/json")
-                .body(requestParams.toString())
+                //.body(requestParams.toString())
+                .body(pDTO)
                 .when()
                 .put("/person/"+id)
                 .then()
