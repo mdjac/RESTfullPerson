@@ -9,6 +9,8 @@ package rest;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import dtos.PersonDTO;
+import errorhandling.MissingFieldsException;
+import errorhandling.PersonNotFoundException;
 import utils.EMF_Creator;
 import facades.FacadeExample;
 import facades.PersonFacade;
@@ -43,14 +45,15 @@ public class PersonResource {
     @Path("{id}")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getPersonById(@PathParam("id") int id) {
-        return Response.ok(gson.toJson(facade.getPerson(id)), MediaType.APPLICATION_JSON).build();
+    public Response getPersonById(@PathParam("id") int id) throws PersonNotFoundException {
+        PersonDTO pdto = facade.getPerson(id);
+        return Response.ok(gson.toJson(pdto), MediaType.APPLICATION_JSON).build();
     }
     
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response addPerson (String person){
+    public Response addPerson (String person) throws MissingFieldsException{
         PersonDTO pDTO = gson.fromJson(person, PersonDTO.class);
         pDTO = facade.addPerson(pDTO.getfName(), pDTO.getlName(), pDTO.getPhone());
         return Response.ok(gson.toJson(pDTO), MediaType.APPLICATION_JSON).build();
@@ -60,7 +63,7 @@ public class PersonResource {
     @PUT
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response updatePerson (@PathParam("id")int id, String person){
+    public Response updatePerson (@PathParam("id")int id, String person) throws MissingFieldsException{
         PersonDTO pDTO = gson.fromJson(person, PersonDTO.class);
         pDTO.setId(id);
         pDTO = facade.editPerson(pDTO);
@@ -71,7 +74,7 @@ public class PersonResource {
     @DELETE
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response deletePerson (@PathParam("id")int id){
+    public Response deletePerson (@PathParam("id")int id) throws PersonNotFoundException{
         PersonDTO pDto = facade.deletePerson(id);
         return Response.ok("{\"status\" : \"removed id:"+pDto.getId()+"\"}", MediaType.APPLICATION_JSON).build();
     }

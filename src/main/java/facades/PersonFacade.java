@@ -8,6 +8,8 @@ package facades;
 import dtos.PersonDTO;
 import dtos.PersonsDTO;
 import entities.Person;
+import errorhandling.MissingFieldsException;
+import errorhandling.PersonNotFoundException;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -33,7 +35,11 @@ public class PersonFacade implements IPersonFacade{
     }
 
     @Override
-    public PersonDTO addPerson(String fName, String lName, String phone) {
+    public PersonDTO addPerson(String fName, String lName, String phone) throws MissingFieldsException{
+        if(fName == null || lName == null || phone == null){
+            throw new MissingFieldsException("One or more fields is missing!");
+        }
+        
         Person p = new Person(fName,lName,phone);
         EntityManager em = emf.createEntityManager();
         try {
@@ -47,14 +53,17 @@ public class PersonFacade implements IPersonFacade{
     }
 
     @Override
-    public PersonDTO deletePerson(int id) {
+    public PersonDTO deletePerson(int id) throws PersonNotFoundException {
         EntityManager em = emf.createEntityManager();
         Person person;
         try {
             em.getTransaction().begin();
                 person = em.find(Person.class, id);
+                if(person == null){
+                    throw new PersonNotFoundException("Could not delete, provided id does not exist!");
+                }
                 em.remove(person);
-            em.getTransaction().commit();
+                em.getTransaction().commit();
             return new PersonDTO(person);
         } finally {
             em.close();
@@ -63,9 +72,15 @@ public class PersonFacade implements IPersonFacade{
     }
 
     @Override
-    public PersonDTO getPerson(int id) {
+    public PersonDTO getPerson(int id) throws PersonNotFoundException {
         EntityManager em = emf.createEntityManager();
-        return new PersonDTO(em.find(Person.class, id));
+        Person p = em.find(Person.class, id);
+        if(p == null){
+            throw new PersonNotFoundException("No person with provided id found");
+        }else{
+            return new PersonDTO(p);
+        }
+     
     }
 
     @Override
@@ -77,7 +92,10 @@ public class PersonFacade implements IPersonFacade{
     }
 
     @Override
-    public PersonDTO editPerson(PersonDTO p) {
+    public PersonDTO editPerson(PersonDTO p) throws MissingFieldsException {
+        if(p.getfName() == null || p.getlName() == null || p.getPhone() == null){
+            throw new MissingFieldsException("One or more fields is missing!");
+        }
         EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();

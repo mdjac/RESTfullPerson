@@ -9,6 +9,12 @@ package rest;
  *
  * @author mikke
  */
+import org.hamcrest.Matchers;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.hasItems;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
 import dtos.PersonDTO;
 import entities.Person;
 import utils.EMF_Creator;
@@ -23,12 +29,6 @@ import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.grizzly.http.util.HttpStatus;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
-import org.hamcrest.Matchers;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.greaterThan;
-import static org.hamcrest.Matchers.hasItems;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
 import org.json.simple.JSONObject;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -102,6 +102,8 @@ public class PersonResourceTest {
         System.out.println("Testing is server UP");
         given().when().get("/person").then().statusCode(200);
     }
+    
+    
     
     @Test
     public void testGetAllPersons() {
@@ -178,6 +180,43 @@ public class PersonResourceTest {
                 .statusCode(HttpStatus.OK_200.getStatusCode())
                 .body("status", is("removed id:"+id));
     }
+    
+    @Test
+    public void testGetPersonByIdFail(){
+        int id = 10000;
+        given()
+                .contentType("application/json")
+                .get("/person/"+id).then()
+                .assertThat()
+                .statusCode(HttpStatus.NOT_FOUND_404.getStatusCode());
+    }
+    
+    @Test
+    public void testDeletePersonFail(){
+        int id = 10000;
+        given()
+                .contentType("application/json")
+                .delete("/person/"+id).then()
+                .assertThat()
+                .statusCode(HttpStatus.NOT_FOUND_404.getStatusCode());
+    }
+    
+    //@Test
+    public void testAddPersonFail() {
+        JSONObject requestParams = new JSONObject();
+        requestParams.put("fName", "testPOST");
+        requestParams.put("lName", "test");
+        requestParams.put("phone", "test");
 
+        given()
+                .contentType("application/json")
+                .body(requestParams.toString())
+                .when()
+                .post("/person")
+                .then()
+                .assertThat()
+                .statusCode(400);
+    }
+ 
     
 }
