@@ -13,7 +13,7 @@ import dtos.PersonsDTO;
  * @author mikke
  */
 public interface IPersonFacade {
-  public PersonDTO addPerson(String fName, String lName, String phone) throws Exception;  
+  public PersonDTO addPerson(PersonDTO pdto) throws Exception;  
   public PersonDTO deletePerson(int id) throws Exception;  
   public PersonDTO getPerson(int id) throws Exception;  
   public PersonsDTO getAllPersons();  

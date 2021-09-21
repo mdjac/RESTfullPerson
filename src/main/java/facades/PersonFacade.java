@@ -7,6 +7,7 @@ package facades;
 
 import dtos.PersonDTO;
 import dtos.PersonsDTO;
+import entities.Address;
 import entities.Person;
 import errorhandling.MissingFieldsException;
 import errorhandling.PersonNotFoundException;
@@ -35,12 +36,15 @@ public class PersonFacade implements IPersonFacade{
     }
 
     @Override
-    public PersonDTO addPerson(String fName, String lName, String phone) throws MissingFieldsException{
-        if(fName == null || lName == null || phone == null){
+    public PersonDTO addPerson(PersonDTO pdto) throws MissingFieldsException{
+        if(pdto.getfName() == null || pdto.getlName() == null || pdto.getPhone() == null){
             throw new MissingFieldsException("One or more fields is missing!");
         }
+        Person p = new Person(pdto.getfName(),pdto.getlName(),pdto.getPhone());
+        if(pdto.getCity() != null && pdto.getZip() != 0 && pdto.getStreet() != null){
+            p.setAddress(new Address(pdto.getStreet(),pdto.getZip(),pdto.getCity()));
+        }
         
-        Person p = new Person(fName,lName,phone);
         EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();

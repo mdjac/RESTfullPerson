@@ -55,7 +55,7 @@ public class PersonResource {
     @Consumes(MediaType.APPLICATION_JSON)
     public Response addPerson (String person) throws MissingFieldsException{
         PersonDTO pDTO = gson.fromJson(person, PersonDTO.class);
-        pDTO = facade.addPerson(pDTO.getfName(), pDTO.getlName(), pDTO.getPhone());
+        pDTO = facade.addPerson(pDTO);
         return Response.ok(gson.toJson(pDTO), MediaType.APPLICATION_JSON).build();
     }
     

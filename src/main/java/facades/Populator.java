@@ -6,6 +6,7 @@
 package facades;
 
 import dtos.RenameMeDTO;
+import entities.Address;
 import entities.Person;
 import entities.RenameMe;
 import javax.persistence.EntityManager;
@@ -25,11 +26,21 @@ public class Populator {
         //fe.create(new RenameMeDTO(new RenameMe("First 1", "Last 1")));
         //fe.create(new RenameMeDTO(new RenameMe("First 2", "Last 2")));
         //fe.create(new RenameMeDTO(new RenameMe("First 3", "Last 3")));
+        Address a1 = new Address("Testvej",1000,"Testby");
+        
+        Person p1 = new Person("test1", "test1", "test1");
+        p1.setAddress(a1);
+        Person p2 = new Person("test2", "test2", "test2");
+        p2.setAddress(new Address("Testvej",2000,"Testby"));
+        Person p3 = new Person("test3", "test3", "test3");
+        p3.setAddress(a1);
+        
         
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
-            em.persist(new Person("test1", "test2", "test3"));
-            em.persist(new Person("test4", "test5", "test6"));
+            em.persist(p1);
+            em.persist(p2);
+            em.persist(p3);
         em.getTransaction().commit();
         em.close();
 

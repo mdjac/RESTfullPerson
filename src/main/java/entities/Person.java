@@ -9,11 +9,14 @@ import dtos.PersonDTO;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.Objects;
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
@@ -38,6 +41,9 @@ public class Person implements Serializable {
     @Temporal(TemporalType.DATE)
     private Date lastEdited;
     
+    @ManyToOne(cascade = {CascadeType.PERSIST})
+    private Address address;
+    
     public Person() {
     }
 
@@ -54,8 +60,22 @@ public class Person implements Serializable {
         this.firstName = pDto.getfName();
         this.lastName = pDto.getlName();
         this.phone = pDto.getPhone();
+        this.address.setCity(pDto.getCity());
+        this.address.setZip(pDto.getZip());
+        this.address.setStreet(pDto.getStreet());
         return this;
     }
+
+    public Address getAddress() {
+        return address;
+    }
+
+    public void setAddress(Address address) {
+        this.address = address;
+        address.addPersons(this);
+    }
+    
+    
     
     public Integer getId() {
         return id;
