@@ -97,6 +97,15 @@ public class PersonResourceTest {
         }
     }
 
+    
+    
+    //@Test
+    public void testWrongURL() {
+        given().when().get("/person/url/fines/ikke").then().statusCode(500);
+    }
+    
+    
+    
     @Test
     public void testServerIsUp() {
         System.out.println("Testing is server UP");
